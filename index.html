@@ -1,0 +1,1807 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onde se encontra o Alfred?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-cream: #faf8f4;
+    --bg-dark: #0e1b22;
+    --accent: #2e5c68;
+    --accent-dark: #1d3f48;
+    --accent-soft: #4a8b98;
+    --accent-pale: #a9c7cc;
+    --text-dark: #0e1b22;
+    --text-muted: #6b7d83;
+    --card: #ffffff;
+    --card-soft: #eef3f4;
+    --border: rgba(14,27,34,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-dark);
+    background: var(--bg-cream);
+    min-height: 100vh;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+  img.character { pointer-events: auto; }
+  body { padding-bottom: 90px; }
+  .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+  /* ---------- LANDING ---------- */
+  .landing {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-dark);
+    isolation: isolate;
+  }
+  .landing::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(169,199,204,0.45), transparent 50%),
+      radial-gradient(circle at 75% 80%, rgba(46,92,104,0.18), transparent 55%),
+      linear-gradient(180deg, #faf8f4 0%, #eef3f4 100%);
+    z-index: -2;
+  }
+  .landing::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(46,92,104,0.08) 0 1px, transparent 2px),
+      radial-gradient(circle at 70% 60%, rgba(46,92,104,0.06) 0 1px, transparent 2px),
+      radial-gradient(circle at 45% 80%, rgba(46,92,104,0.08) 0 1px, transparent 2px);
+    background-size: 80px 80px;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .landing .character {
+    width: 180px;
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 14px 24px rgba(46,92,104,0.25));
+    mix-blend-mode: multiply;
+    background: transparent;
+  }
+  .landing h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 900;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    line-height: 1.05;
+    max-width: 14ch;
+  }
+  .landing h1 .accent { color: var(--accent); font-style: italic; }
+  .landing .subtitle { margin-top: 1rem; color: var(--text-muted); }
+  .landing .ghost-pill {
+    margin-top: 1.25rem;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--border);
+    color: var(--text-dark);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  .landing .ghost-pill:hover { background: white; }
+  .landing .cta-row { margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .landing .btn-ghost { color: var(--text-dark); opacity: 0.75; }
+  .footer-note {
+    position: absolute; bottom: 1.5rem; left: 0; right: 0;
+    color: var(--text-muted); font-size: 0.85rem;
+  }
+  .footer-note a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+  /* ---------- BUTTONS ---------- */
+  .btn-primary {
+    background: var(--accent); color: white; border: none;
+    padding: 0.85rem 1.5rem; font-size: 1rem; font-weight: 600;
+    border-radius: 999px; cursor: pointer;
+    box-shadow: 0 10px 25px rgba(46,92,104,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(46,92,104,0.45); }
+  .btn-primary.block { width: 100%; padding: 0.95rem; }
+  .btn-ghost {
+    background: transparent; border: none; color: #f3ece2;
+    font-size: 1rem; font-weight: 500; cursor: pointer;
+    padding: 0.85rem 0.5rem; text-decoration: underline; text-underline-offset: 4px; opacity: 0.85;
+  }
+  .btn-outline {
+    background: white; border: 1px solid var(--border);
+    padding: 0.75rem 1rem; border-radius: 12px;
+    font-weight: 500; cursor: pointer; color: var(--text-dark);
+    display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center;
+  }
+  .btn-outline:hover { background: var(--card-soft); }
+
+  /* ---------- APP SHELL ---------- */
+  .app { display: none; max-width: 720px; margin: 0 auto; }
+  .app.active { display: block; }
+
+  .hero {
+    background: var(--bg-dark);
+    color: #f3ece2;
+    border-radius: 0 0 24px 24px;
+    padding: 2rem 1.5rem 1.5rem;
+    margin: 0 0.75rem;
+  }
+  .hero .tag {
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .hero-row {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .hero h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; }
+  .hero h2 .accent { color: var(--accent); font-style: italic; }
+  .pts-pill {
+    background: rgba(46,92,104,0.15);
+    color: var(--accent);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    display: inline-flex; flex-direction: column; align-items: center; line-height: 1;
+  }
+  .pts-pill span { font-size: 1.5rem; }
+  .pts-pill small { font-size: 0.7rem; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+  .progress {
+    margin-top: 1.5rem;
+    height: 6px; width: 100%;
+    background: rgba(255,255,255,0.1);
+    border-radius: 999px; overflow: hidden;
+  }
+  .progress > div { height: 100%; background: var(--accent); width: 18%; }
+  .hero-meta { margin-top: 0.75rem; display: flex; gap: 1rem; font-size: 0.85rem; opacity: 0.75; }
+
+  section.block {
+    padding: 1.5rem 1rem 0.5rem;
+  }
+  section.block h3 {
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  /* Quest log horizontal scroll */
+  .quest-scroll {
+    display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem;
+    scroll-snap-type: x mandatory;
+  }
+  .quest-card {
+    flex: 0 0 160px;
+    background: var(--card-soft);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem;
+    scroll-snap-align: start;
+    cursor: pointer;
+  }
+  .quest-card .pin {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: white; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0.75rem; font-size: 1.1rem;
+  }
+  .quest-card strong { display: block; font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .quest-card small { display: block; color: var(--text-muted); font-size: 0.75rem; }
+  .quest-card .status { margin-top: 0.5rem; font-size: 0.75rem; font-weight: 600; }
+  .status.active { color: #2e7d32; }
+  .status.locked { color: var(--text-muted); }
+  .status.missed { color: #c0392b; }
+  .quest-card.locked { opacity: 0.55; }
+  .quest-card.active { border-color: rgba(46,92,104,0.45); background: #e8f1f3; }
+
+  /* Badge grid */
+  .badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .badge-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+  .badge-card .icon-box {
+    width: 52px; height: 52px; margin: 0 auto 0.75rem;
+    background: var(--card-soft); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  }
+  .badge-card strong { display: block; font-size: 0.95rem; }
+  .badge-card small { color: var(--text-muted); font-size: 0.8rem; }
+
+  /* Invite section card */
+  .invite-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+  .invite-card .row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .invite-card .num-pill {
+    background: var(--card-soft); border-radius: 999px;
+    padding: 0.5rem 1.25rem;
+    text-align: center;
+  }
+  .invite-card .num-pill strong { color: var(--accent); font-family: 'Playfair Display', serif; font-size: 1.25rem; display: block; }
+  .invite-card .num-pill small { color: var(--text-muted); font-size: 0.7rem; }
+  .invite-actions { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  /* Prize grid */
+  .prize-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .prize-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+  }
+  .prize-card.first { background: var(--card-soft); border-color: var(--accent-pale); }
+  .prize-card .medal { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .prize-card strong { font-family: 'Playfair Display', serif; font-size: 1rem; display: block; }
+  .prize-card small { color: var(--text-muted); font-size: 0.75rem; }
+
+  /* ---------- MAP TAB ---------- */
+  .map-stage {
+    position: relative;
+    height: calc(100vh - 200px);
+    margin: 0 0.75rem;
+    border-radius: 24px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 50%, #e6f3f7 0%, #cfe3eb 100%);
+  }
+  .map-stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/2560px-World_map_-_low_resolution.svg.png");
+    background-size: cover; background-position: center;
+    opacity: 0.25;
+    filter: hue-rotate(-10deg) saturate(0.6);
+  }
+  .map-card-top, .map-card-bottom {
+    position: absolute; left: 1rem; right: 1rem;
+    background: white;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .map-card-top { top: 1rem; }
+  .map-card-bottom { bottom: 1rem; justify-content: space-between; }
+  .map-card-top .x-circle {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(46,92,104,0.15); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 700;
+  }
+  .map-card-top .meta small { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
+  .map-card-top .meta strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.05rem; }
+  .map-card-bottom a { color: var(--text-dark); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .map-target {
+    position: absolute;
+    left: 60%; top: 45%;
+    width: 36px; height: 36px;
+    background: radial-gradient(circle, var(--accent) 0%, var(--accent) 30%, #6aa9ff 50%);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(46,92,104,0.25);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .map-target::after { content: "ðŸŽ¯"; font-size: 1.1rem; }
+
+  /* ---------- INVITE TAB ---------- */
+  .qr-block { text-align: center; padding: 1rem 0; }
+  .qr-box {
+    display: inline-block;
+    padding: 1.25rem; background: white; border-radius: 18px;
+    border: 1px solid var(--border);
+  }
+  .qr-box svg { width: 180px; height: 180px; display: block; }
+  .qr-caption { margin-top: 0.75rem; color: var(--text-muted); font-size: 0.85rem; }
+  .qr-caption em { color: var(--text-dark); font-family: 'Playfair Display', serif; font-style: italic; }
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
+  .stat-cell {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 0.85rem; text-align: center;
+  }
+  .stat-cell strong {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; color: var(--accent); display: block;
+  }
+  .stat-cell small { color: var(--text-muted); font-size: 0.75rem; }
+  .gift-note { text-align: center; margin-top: 1.5rem; color: var(--text-muted); }
+
+  /* ---------- LEADERBOARD ---------- */
+  .podium {
+    display: flex; justify-content: center; align-items: flex-end; gap: 0.5rem;
+    padding: 1rem 0;
+  }
+  .podium-col { text-align: center; flex: 1; max-width: 100px; }
+  .podium-col .avatar {
+    width: 48px; height: 48px; margin: 0 auto;
+    border-radius: 50%; background: var(--card-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+  .podium-col .name { font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-muted); }
+  .podium-col .pts { color: var(--accent); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; }
+  .podium-col .step {
+    margin-top: 0.5rem;
+    background: var(--card-soft);
+    border-radius: 12px 12px 0 0;
+    padding: 0.75rem 0.5rem;
+    font-size: 1.3rem;
+  }
+  .podium-col.first .step { background: rgba(46,92,104,0.15); height: 80px; }
+  .podium-col.second .step { background: rgba(106,169,255,0.15); height: 65px; }
+  .podium-col.third .step { background: rgba(190,120,80,0.15); height: 55px; }
+
+  .rank-list { margin-top: 1rem; }
+  .rank-row {
+    display: grid; grid-template-columns: 32px 36px 1fr auto;
+    gap: 0.75rem; align-items: center;
+    padding: 0.85rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .rank-row .rank-num { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; }
+  .rank-row .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--card-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700;
+  }
+  .rank-row .pts { color: var(--accent); font-family: 'Playfair Display', serif; font-weight: 700; }
+
+  /* ---------- PROFILE ---------- */
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .field input[type=text] {
+    width: 100%; padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px; font-size: 1rem;
+    background: white;
+  }
+  .field .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem; }
+  .check-card {
+    background: white; border: 1px solid var(--border); border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex; align-items: flex-start; gap: 0.75rem;
+  }
+  .check-card input { margin-top: 0.2rem; accent-color: var(--accent); width: 18px; height: 18px; }
+  .check-card strong { display: block; font-size: 0.95rem; }
+  .check-card small { color: var(--text-muted); font-size: 0.8rem; }
+  .signout-link {
+    display: block; text-align: center;
+    margin: 1.25rem 0; color: var(--accent);
+    font-weight: 600; background: none; border: none; cursor: pointer; width: 100%;
+  }
+
+  /* ---------- BOTTOM NAV ---------- */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg-cream);
+    border-top: 1px solid var(--border);
+    display: none;
+    justify-content: space-around;
+    padding: 0.5rem 0 0.75rem;
+    z-index: 50;
+  }
+  .bottom-nav.show { display: flex; }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+    color: var(--text-muted); font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+  .nav-btn .icon { font-size: 1.2rem; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn.active::after { content: "â€¢"; font-size: 0.7rem; }
+
+  .ack {
+    text-align: center; font-size: 0.75rem; color: var(--text-muted);
+    margin: 1.5rem 0 0.5rem;
+  }
+  .ack .accent { color: var(--accent); font-weight: 600; }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(14,27,34,0.55);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem 1.75rem;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  .modal h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+  }
+  .modal p.sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+  .modal .field { margin-bottom: 0.85rem; }
+  .modal .field input {
+    width: 100%; padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px; font-size: 0.95rem;
+    background: var(--bg-cream);
+    font-family: inherit;
+  }
+  .modal .field input:focus { outline: 2px solid var(--accent-soft); }
+  .modal .err {
+    background: #fde8e3; color: #8a2418; border-radius: 10px;
+    padding: 0.55rem 0.75rem; font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .modal .switch-link {
+    margin-top: 1rem; text-align: center;
+    font-size: 0.85rem; color: var(--text-muted);
+  }
+  .modal .switch-link a {
+    color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: none;
+  }
+  .modal .close-x {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; cursor: pointer;
+    font-size: 1.25rem; color: var(--text-muted);
+  }
+  .modal-wrap { position: relative; }
+
+  /* Puzzle mode: transparent modal, light text */
+  .modal.puzzle-mode {
+    background: transparent;
+    box-shadow: none;
+    color: #f4ede0;
+    max-width: 420px;
+  }
+  .modal.puzzle-mode h3,
+  .modal.puzzle-mode p,
+  .modal.puzzle-mode small,
+  .modal.puzzle-mode em,
+  .modal.puzzle-mode strong { color: #f4ede0; }
+  .modal.puzzle-mode .close-x { color: #f4ede0; font-size: 1.5rem; }
+  .modal.puzzle-mode .err {
+    background: rgba(229,77,77,0.18);
+    color: #ffd6cf;
+  }
+  .modal.puzzle-mode input {
+    background: rgba(255,255,255,0.08);
+    color: #f4ede0;
+    border-color: rgba(255,255,255,0.18);
+  }
+  .modal.puzzle-mode input::placeholder { color: rgba(244,237,224,0.5); }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="screen-landing" class="landing">
+  <img class="character" src="attachments/0e43ef89-254a-4e70-aede-a345c3447eca_pasted-image-1.png" alt="Alfred astronauta" />
+  <h1>Onde se encontra o <span class="accent">Alfred</span>?</h1>
+  <p class="subtitle">Uma trilha de pistas te aguarda. O resto Ã© com vocÃª.</p>
+  <button class="ghost-pill" onclick="openStory()">A HistÃ³ria AtÃ© Agora...</button>
+  <div class="cta-row">
+    <button class="btn-primary" onclick="openModal('register')">Cadastre-se &rarr;</button>
+    <button class="btn-ghost" onclick="openModal('login')">JÃ¡ tem conta? Conecte-se</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="app">
+  <div class="hero" style="padding: 1rem 1.25rem;">
+    <div id="winnerBanner" style="font-size: 0.95rem; line-height: 1.4; text-align: center;">
+      <span style="opacity: 0.6;">Carregando status...</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.08);">
+      <div style="display: flex; gap: 1.25rem; font-size: 0.85rem; opacity: 0.85;">
+        <span>ðŸ“… 18 de Maio</span>
+        <span>ðŸ“ <span id="heroQuestCount">0/7</span></span>
+      </div>
+      <div class="pts-pill" style="font-family: 'Courier New', monospace; padding: 0.35rem 0.85rem;">
+        <span id="heroTimer" style="font-size: 1.1rem;">00:00</span>
+        <small>tempo</small>
+      </div>
+    </div>
+  </div>
+
+  <section class="block">
+    <h3>ðŸ—º DiÃ¡rio de Desafios Â· Dia 1 no ar</h3>
+    <div class="quest-scroll" id="questScroll">
+      <div class="quest-card active" data-quest="1" onclick="openQuest(1)"><div class="pin">ðŸ“¡</div><strong>Sinal de RÃ¡dio Interceptado</strong><small>Desafio 01</small><div class="status active">â— Ativo</div></div>
+      <div class="quest-card locked" data-quest="2" onclick="openQuest(2)"><div class="pin">ðŸ”’</div><strong>???</strong><small>Desafio 02</small><div class="status locked">Resolva o anterior</div></div>
+      <div class="quest-card locked" data-quest="3" onclick="openQuest(3)"><div class="pin">ðŸ”’</div><strong>???</strong><small>Desafio 03</small><div class="status locked">Resolva o anterior</div></div>
+      <div class="quest-card locked" data-quest="4" onclick="openQuest(4)"><div class="pin">ðŸ”’</div><strong>???</strong><small>Desafio 04</small><div class="status locked">Resolva o anterior</div></div>
+      <div class="quest-card locked" data-quest="5" onclick="openQuest(5)"><div class="pin">ðŸ”’</div><strong>???</strong><small>Desafio 05</small><div class="status locked">Resolva o anterior</div></div>
+      <div class="quest-card locked" data-quest="6" onclick="openQuest(6)"><div class="pin">ðŸ”’</div><strong>???</strong><small>Desafio 06</small><div class="status locked">Resolva o anterior</div></div>
+      <div class="quest-card locked" data-quest="7" onclick="openQuest(7)"><div class="pin">ðŸ”’</div><strong>???</strong><small>Desafio 07</small><div class="status locked">Resolva o anterior</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="selfieSection" style="display: none;">
+    <h3 id="selfieHeading">ðŸŽ‰ MissÃ£o Cumprida: Selfie com o Alfred!</h3>
+    <div class="invite-card" id="selfieCard" style="background: linear-gradient(135deg, var(--bg-dark) 0%, var(--accent) 200%); color: #f4ede0; border: none;"></div>
+  </section>
+
+  <section class="block">
+    <h3>ðŸ† PrÃªmio</h3>
+    <div class="prize-grid" style="grid-template-columns: 1fr;">
+      <div class="prize-card first" style="padding: 1.25rem;"><div class="medal" style="font-size: 2rem;">ðŸŽï¸</div><strong style="font-size: 1.1rem;">LEGO do Ayrton Senna</strong><small>Para o primeiro a concluir a missÃ£o</small></div>
+    </div>
+  </section>
+</div>
+
+<!-- MAP -->
+<div id="screen-map" class="app">
+  <div class="map-stage" id="mapStage" onclick="placePin(event)">
+    <div class="map-card-top" style="background: white;">
+      <div class="x-circle" style="background: rgba(46,125,50,0.15); color: #2e7d32;">â—</div>
+      <div class="meta" style="flex: 1;">
+        <small>DIA 1 Â· 23 DE MARÃ‡O</small>
+        <strong>ChÃ¡ para Visitantes Altos</strong>
+        <small style="color: #2e7d32; font-weight: 600;">Ativo â€” toque no mapa para fixar seu pino</small>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-family: 'Playfair Display', serif; color: var(--accent); font-size: 1.5rem; font-weight: 700;" id="timer">04:32</div>
+        <small style="color: var(--text-muted); font-size: 0.7rem;">restante</small>
+      </div>
+    </div>
+
+    <div style="position: absolute; top: 130px; left: 1rem; right: 1rem; background: rgba(255,255,255,0.95); border-radius: 14px; padding: 0.9rem 1.1rem; box-shadow: 0 6px 14px rgba(0,0,0,0.08);">
+      <small style="color: var(--text-muted); font-weight: 600; letter-spacing: 0.1em;">ðŸ“œ PISTA</small>
+      <p style="margin-top: 0.35rem; font-family: 'Playfair Display', serif; font-style: italic; font-size: 1rem; line-height: 1.4;">
+        "Onde os mais altos se reÃºnem com seus trofÃ©us em salÃµes de bronze â€” encontre a cidade que recebe os gigantes que correm, saltam e arremessam a bola."
+      </p>
+    </div>
+
+    <div class="map-target" id="userPin" style="display: none; background: var(--accent); box-shadow: 0 0 0 4px rgba(46,92,104,0.3);"></div>
+
+    <div class="map-card-bottom" id="bottomCard">
+      <span style="color: var(--text-dark); font-size: 0.9rem; font-weight: 500;">ðŸ“ Toque no mapa para colocar seu pino</span>
+      <a href="#" onclick="submitPin(event)">Enviar â†’</a>
+    </div>
+  </div>
+</div>
+
+<!-- INVITE -->
+<div id="screen-invite" class="app">
+  <div class="hero">
+    <div class="tag">Bsides SP 2026</div>
+    <div style="margin-top: 0.5rem;">
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700;">Traga um Amigo</h2>
+      <p style="margin-top: 0.5rem; opacity: 0.8; font-size: 0.9rem;">Ganhe 50 pts por cada amigo que entrar (atÃ© 10)</p>
+    </div>
+  </div>
+
+  <section class="block">
+    <div class="qr-block">
+      <div class="qr-box">
+        <!-- Decorative QR pattern -->
+        <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+          <rect width="21" height="21" fill="white"/>
+          <g fill="#1a120b">
+            <!-- corners -->
+            <rect x="0" y="0" width="7" height="7"/>
+            <rect x="14" y="0" width="7" height="7"/>
+            <rect x="0" y="14" width="7" height="7"/>
+            <rect x="1" y="1" width="5" height="5" fill="white"/>
+            <rect x="15" y="1" width="5" height="5" fill="white"/>
+            <rect x="1" y="15" width="5" height="5" fill="white"/>
+            <rect x="2" y="2" width="3" height="3"/>
+            <rect x="16" y="2" width="3" height="3"/>
+            <rect x="2" y="16" width="3" height="3"/>
+            <!-- random data dots -->
+            <rect x="8" y="0" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="12" y="0" width="1" height="1"/>
+            <rect x="9" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/>
+            <rect x="8" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/>
+            <rect x="9" y="6" width="1" height="1"/><rect x="11" y="6" width="1" height="1"/>
+            <rect x="0" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/>
+            <rect x="8" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="12" y="8" width="1" height="1"/><rect x="14" y="8" width="1" height="1"/>
+            <rect x="16" y="8" width="1" height="1"/><rect x="18" y="8" width="1" height="1"/><rect x="20" y="8" width="1" height="1"/>
+            <rect x="1" y="10" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="5" y="10" width="1" height="1"/>
+            <rect x="7" y="10" width="1" height="1"/><rect x="9" y="10" width="1" height="1"/><rect x="11" y="10" width="1" height="1"/>
+            <rect x="13" y="10" width="1" height="1"/><rect x="15" y="10" width="1" height="1"/><rect x="17" y="10" width="1" height="1"/>
+            <rect x="0" y="12" width="1" height="1"/><rect x="2" y="12" width="1" height="1"/><rect x="4" y="12" width="1" height="1"/>
+            <rect x="8" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/>
+            <rect x="16" y="12" width="1" height="1"/><rect x="18" y="12" width="1" height="1"/><rect x="20" y="12" width="1" height="1"/>
+            <rect x="9" y="14" width="1" height="1"/><rect x="11" y="14" width="1" height="1"/><rect x="13" y="14" width="1" height="1"/>
+            <rect x="15" y="14" width="1" height="1"/><rect x="17" y="14" width="1" height="1"/>
+            <rect x="8" y="16" width="1" height="1"/><rect x="10" y="16" width="1" height="1"/><rect x="12" y="16" width="1" height="1"/>
+            <rect x="14" y="16" width="1" height="1"/><rect x="16" y="16" width="1" height="1"/><rect x="18" y="16" width="1" height="1"/>
+            <rect x="9" y="18" width="1" height="1"/><rect x="11" y="18" width="1" height="1"/><rect x="13" y="18" width="1" height="1"/>
+            <rect x="15" y="18" width="1" height="1"/><rect x="17" y="18" width="1" height="1"/><rect x="19" y="18" width="1" height="1"/>
+            <rect x="8" y="20" width="1" height="1"/><rect x="10" y="20" width="1" height="1"/><rect x="12" y="20" width="1" height="1"/>
+            <rect x="14" y="20" width="1" height="1"/><rect x="16" y="20" width="1" height="1"/><rect x="20" y="20" width="1" height="1"/>
+          </g>
+        </svg>
+      </div>
+      <div class="qr-caption">Escaneie para entrar em <em>Onde se encontra o Alfred?</em></div>
+    </div>
+    <button class="btn-outline" style="width:100%; margin-top: 0.5rem;" onclick="copyInvite()">ðŸ“‹ Copiar Link de Convite</button>
+    <div class="stat-row">
+      <div class="stat-cell"><strong>0</strong><small>Convidados</small></div>
+      <div class="stat-cell"><strong>0</strong><small>Pts Ganhos</small></div>
+      <div class="stat-cell"><strong>10</strong><small>Vagas Restantes</small></div>
+    </div>
+    <div class="gift-note">ðŸŽ<br><small>Compartilhe seu link e acumule pontos!</small></div>
+  </section>
+</div>
+
+<!-- RANKS -->
+<div id="screen-ranks" class="app">
+  <div class="hero" style="text-align: center;">
+    <div class="tag">Bsides SP 2026 Â· Ao vivo</div>
+    <h2 style="margin-top: 0.5rem;">Ranking</h2>
+    <p style="margin-top: 0.5rem; opacity: 0.7; font-size: 0.9rem;" id="rankSubtitle">0 exploradores competindo</p>
+  </div>
+
+  <section class="block">
+    <div class="podium" id="rankPodium"></div>
+    <div class="rank-list" id="rankList"></div>
+  </section>
+</div>
+
+<!-- PROFILE -->
+<div id="screen-profile" class="app">
+  <div class="hero">
+    <button class="btn-ghost" style="padding: 0; opacity: 0.7;" onclick="openApp('home')">â† Voltar</button>
+    <h2 style="margin-top: 0.5rem;">Seu Perfil</h2>
+    <p style="margin-top: 0.25rem; opacity: 0.6; font-size: 0.9rem;" id="profileEmail">explorador@bsidessp.io</p>
+  </div>
+
+  <section class="block">
+    <div class="field">
+      <label>Nome de usuÃ¡rio</label>
+      <input type="text" id="profileName" value="explorador" />
+      <div class="hint">Ã‰ assim que vocÃª aparece no ranking.</div>
+    </div>
+    <div class="check-card">
+      <input type="checkbox" checked />
+      <div>
+        <strong>NotificaÃ§Ãµes por e-mail</strong>
+        <small>Receba um aviso quando novos desafios abrirem</small>
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      <button class="btn-primary block">ðŸ’¾ Salvar AlteraÃ§Ãµes</button>
+    </div>
+    <button class="signout-link" onclick="signOut()">â†ª Sair</button>
+  </section>
+</div>
+
+<!-- QUEST MODAL -->
+<div class="modal-overlay" id="questModal">
+  <div class="modal modal-wrap" style="max-width: 560px; max-height: 88vh; overflow-y: auto;">
+    <button class="close-x" onclick="closeQuest()">âœ•</button>
+    <small style="color: var(--text-muted); font-weight: 600; letter-spacing: 0.12em;" id="questTag">DESAFIO 01</small>
+    <h3 id="questTitle" style="font-size: 1.4rem; margin-top: 0.35rem;">Sinal de RÃ¡dio Interceptado</h3>
+    <div id="questBody" style="margin-top: 1rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;"></div>
+    <div class="err" id="errQuest" style="display: none; margin-top: 1rem;"></div>
+    <div class="field" style="margin-top: 1rem;">
+      <input type="text" id="questAnswer" placeholder="Informe a chave secreta..." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem; background: var(--bg-cream); font-family: 'Courier New', monospace;" />
+    </div>
+    <button class="btn-primary block" style="width:100%; margin-top: 0.75rem;" onclick="submitAnswer()">Decodificar &rarr;</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--bg-dark); color: white; padding: 0.75rem 1.25rem; border-radius: 999px; font-size: 0.9rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: none; z-index: 200;"></div>
+
+<!-- WELCOME MODAL (after register) -->
+<div class="modal-overlay" id="welcomeModal">
+  <div class="modal modal-wrap" style="max-width: 520px; max-height: 85vh; overflow-y: auto;">
+    <button class="close-x" onclick="closeWelcome()">âœ•</button>
+    <div style="text-align: center; font-size: 2.5rem;">ðŸš€</div>
+    <h3 style="text-align: center; font-size: 1.5rem; line-height: 1.2; margin-top: 0.5rem;">Obrigado por responder ao chamado, Recruta.</h3>
+    <p style="margin-top: 1rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      Sua disposiÃ§Ã£o em ajudar na busca pelo Alfred foi o primeiro passo crucial. Recebemos um fragmento do sinal dele: ele estÃ¡ preso em uma zona de interferÃªncia profunda nos sistemas da <strong>BSides SP 2026</strong>.
+    </p>
+    <p style="margin-top: 0.75rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      O Alfred nÃ£o pode ser extraÃ­do por meios comuns. Para garantir que apenas um aliado de confianÃ§a o encontre, ele configurou um rastro de desafios modulares. A cada resposta correta, uma nova coordenada Ã© desbloqueada, aproximando vocÃª da localizaÃ§Ã£o exata onde ele estÃ¡ mantido.
+    </p>
+    <button class="btn-primary block" style="width:100%; margin-top: 1.5rem;" onclick="closeWelcome()">Aceitar a missÃ£o ðŸ›°ï¸</button>
+  </div>
+</div>
+
+<!-- STORY MODAL -->
+<div class="modal-overlay" id="storyModal">
+  <div class="modal modal-wrap" style="max-width: 560px; max-height: 85vh; overflow-y: auto;">
+    <button class="close-x" onclick="closeStory()">âœ•</button>
+    <h3 style="font-size: 1.6rem; line-height: 1.2;">OperaÃ§Ã£o Resgate Espacial: Onde estÃ¡ Alfred?</h3>
+    <p style="margin-top: 1rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      Alfred deveria ser o centro das atenÃ§Ãµes na BSides SP 2026. Ele tinha o traje pressurizado, o treinamento de elite e as coordenadas da empresa que estÃ¡ revolucionando o setor. Ele tinha uma missÃ£o clara.
+    </p>
+    <p style="margin-top: 0.75rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      Mas o sinal caiu. Ele desapareceu.
+    </p>
+    <p style="margin-top: 0.75rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      O astronauta mais audacioso da conferÃªncia sumiu do radar, mas deixou um rastro de telemetria para trÃ¡s. Fragmentados pelos quatro cantos do evento, existem cÃ³digos, enigmas e segredos sobre a organizaÃ§Ã£o que ele representa.
+    </p>
+    <p style="margin-top: 0.75rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      <strong>Sua missÃ£o?</strong> Mergulhar fundo nos sistemas. Descobrir para quem ele trabalha. Localizar Alfred.
+    </p>
+    <p style="margin-top: 0.75rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      <strong>O Desafio:</strong> NÃ£o basta apenas encontrar o caminho; vocÃª precisarÃ¡ somar o mÃ¡ximo de pontos possÃ­vel em cada etapa. Apenas os mais rÃ¡pidos e precisos chegarÃ£o ao topo do ranking.
+    </p>
+    <p style="margin-top: 0.75rem; color: var(--text-dark); font-size: 0.95rem; line-height: 1.55;">
+      <strong>A Recompensa Final:</strong> Para o explorador que provar ser o melhor navegador desse sistema, um prÃªmio de colecionador: o <span style="color: var(--accent); font-weight: 600;">Set LEGO do Ayrton Senna</span>.
+    </p>
+    <button class="btn-primary block" style="width:100%; margin-top: 1.5rem;" onclick="closeStory()">Estou pronto ðŸš€</button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal modal-wrap">
+    <button class="close-x" onclick="closeModal()">âœ•</button>
+
+    <div id="formRegister">
+      <h3>Crie sua conta</h3>
+      <p class="sub">Entre na caÃ§ada por Alfred.</p>
+      <div class="err" id="errRegister" style="display: none;"></div>
+      <div class="field"><input type="text" id="regName" placeholder="Nome" /></div>
+      <div class="field"><input type="email" id="regEmail" placeholder="E-mail" /></div>
+      <div class="field"><input type="password" id="regPass" placeholder="Senha" /></div>
+      <button class="btn-primary block" style="width:100%;" onclick="doRegister()">Cadastrar</button>
+      <div class="switch-link">JÃ¡ tem conta? <a onclick="switchAuth('login')">Conecte-se</a></div>
+    </div>
+
+    <div id="formLogin" style="display: none;">
+      <h3>Bem-vindo de volta</h3>
+      <p class="sub">Conecte-se para continuar.</p>
+      <div class="err" id="errLogin" style="display: none;"></div>
+      <div class="field"><input type="email" id="logEmail" placeholder="E-mail" /></div>
+      <div class="field"><input type="password" id="logPass" placeholder="Senha" /></div>
+      <button class="btn-primary block" style="width:100%;" onclick="doLogin()">Conecte-se</button>
+      <div class="switch-link">Ainda nÃ£o tem conta? <a onclick="switchAuth('register')">Cadastre-se</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="nav">
+  <button class="nav-btn" data-target="home" onclick="openApp('home')"><span class="icon">ðŸ </span>InÃ­cio</button>
+  <button class="nav-btn" data-target="ranks" onclick="openApp('ranks')"><span class="icon">ðŸ†</span>Ranking</button>
+  <button class="nav-btn" data-target="profile" onclick="openApp('profile')"><span class="icon">ðŸ‘¤</span>Perfil</button>
+</nav>
+
+<script>
+  // ---------- ANTI-COPY/PASTE ----------
+  (function() {
+    const block = e => { e.preventDefault(); return false; };
+    document.addEventListener('contextmenu', block);
+    document.addEventListener('selectstart', e => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+      e.preventDefault();
+    });
+    document.addEventListener('copy', block);
+    document.addEventListener('cut', block);
+    document.addEventListener('paste', block);
+    document.addEventListener('dragstart', block);
+    document.addEventListener('keydown', e => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && ['c','C','v','V','x','X','a','A','s','S','p','P','u','U'].includes(e.key)) {
+        const t = e.target;
+        // permitir paste/copy dentro de input se for o prÃ³prio input
+        // mas bloquear o copy/cut globais â€” inputs jÃ¡ tÃªm seu prÃ³prio fluxo
+        if (e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 's' || e.key.toLowerCase() === 'u' || e.key.toLowerCase() === 'a') {
+          e.preventDefault();
+          return false;
+        }
+        if (!(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA'))) {
+          e.preventDefault();
+          return false;
+        }
+      }
+      // F12 e Ctrl+Shift+I (DevTools) â€” fricÃ§Ã£o, nÃ£o bloqueio real
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c'))) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  })();
+
+  function openApp(target) {
+    document.getElementById('screen-landing').style.display = 'none';
+    document.querySelectorAll('.app').forEach(el => el.classList.remove('active'));
+    document.getElementById('screen-' + target).classList.add('active');
+    document.getElementById('nav').classList.add('show');
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === target);
+    });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (currentUserEmail) saveProgress({ lastActivity: Date.now() });
+    if (target === 'ranks') startLeaderboardLive();
+    else stopLeaderboardLive();
+    if (target === 'home') startHeroLive();
+    else stopHeroLive();
+  }
+  function copyInvite() {
+    alert('Link de convite copiado! (demo)');
+  }
+  function signOut() {
+    currentUserEmail = null;
+    document.querySelectorAll('.app').forEach(el => el.classList.remove('active'));
+    document.getElementById('nav').classList.remove('show');
+    document.getElementById('screen-landing').style.display = 'flex';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function openStory() { document.getElementById('storyModal').classList.add('show'); }
+  function closeStory() { document.getElementById('storyModal').classList.remove('show'); }
+
+  // ---------- QUESTS ----------
+  const QUESTS = [
+    {
+      id: 1,
+      tag: 'DESAFIO 01',
+      title: 'Sinal de RÃ¡dio Interceptado',
+      keys: ['FLAG{ALFRED_NAO_SAIU_DA_TERRA}'],
+      points: 100,
+      body: `
+        <p><em>"Ei, Recruta! VocÃª nÃ£o vai acreditar..."</em></p>
+        <p style="margin-top: 0.75rem;">Acabamos de interceptar uma linha de cÃ³digo estranha vinda dos servidores da conferÃªncia. O Alfred estÃ¡ tentando se comunicar, mas o sinal parece estar falhando. DÃª uma olhada no que encontramos:</p>
+        <pre style="margin-top: 0.75rem; background: var(--bg-dark); color: #a9c7cc; padding: 0.9rem 1rem; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">46 4c 41 47 7b 41 4c 46 52 45 44 5f 4e 41 4f 5f 53 41 49 55 5f 44 41 5f 54 45 52 52 41 7d</pre>
+        <p style="margin-top: 0.75rem;"><strong>O que isso significa?</strong></p>
+      `
+    },
+    {
+      id: 3,
+      tag: 'DESAFIO 03',
+      title: 'O TÃºnel Ofuscado',
+      keys: ['ssh alfredinho@199.115.243.254'],
+      points: 200,
+      type: 'terminal',
+      body: `
+        <p>Acesso de governanÃ§a liberado! O firewall da cÃ¡psula baixou os escudos e nossos pings estÃ£o retornando.</p>
+        <p style="margin-top: 0.75rem;">A interface grÃ¡fica de emergÃªncia estÃ¡ corrompida. A Ãºnica alternativa Ã© acessar o computador de bordo abrindo um <strong>Secure Shell</strong> diretamente do nosso terminal.</p>
+        <p style="margin-top: 0.75rem;">Nossos sensores interceptaram os dados de conexÃ£o, mas o trÃ¡fego estava ofuscado com mÃ©todos antigos e de baixo nÃ­vel. Conseguimos extrair apenas estes dois fragmentos brutos:</p>
+        <ul style="margin-top: 0.5rem; padding-left: 1.25rem; line-height: 1.7;">
+          <li><strong>Credencial do Sistema:</strong> <code style="background: var(--card-soft); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace;">nyserqvaub</code></li>
+          <li><strong>EndereÃ§o IPv4 do Alvo:</strong> <code style="background: var(--card-soft); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace;">11000111.01110011.11110011.11111110</code></li>
+        </ul>
+        <p style="margin-top: 1rem;"><strong>A MissÃ£o:</strong> Decifre a credencial e traduza o endereÃ§o de rede. Qual Ã© o comando padrÃ£o que vocÃª deve executar no terminal abaixo para iniciar essa conexÃ£o remota segura com a cÃ¡psula?</p>
+      `
+    },
+    {
+      id: 4,
+      tag: 'DESAFIO 04',
+      title: 'O Token de SessÃ£o (JWT)',
+      keys: ['EUA'],
+      points: 250,
+      body: `
+        <p>SessÃ£o SSH estabelecida. Estamos no terminal root do Alfred.</p>
+        <p style="margin-top: 0.75rem;">Ao inspecionar os processos ativos, notamos que o mÃ³dulo de interface grÃ¡fica (UI) estÃ¡ travado aguardando uma chave de autorizaÃ§Ã£o. Encontramos um <strong>token de sessÃ£o web</strong> preso no cache de memÃ³ria do sistema.</p>
+        <p style="margin-top: 0.75rem;">Para reativar o painel visual, vocÃª precisa analisar a estrutura deste token e extrair o cÃ³digo de autorizaÃ§Ã£o (<code style="background: var(--card-soft); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace;">auth_secret</code>) escondido dentro de seu Payload.</p>
+        <p style="margin-top: 1rem;"><strong>O Enigma:</strong> Inspecione o token abaixo (dica: a estrutura padrÃ£o de web tokens possui trÃªs partes separadas por pontos). Qual Ã© o valor exato do <code style="background: var(--card-soft); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'Courier New', monospace;">auth_secret</code>?</p>
+        <div style="margin-top: 0.85rem;">
+          <small style="color: var(--text-muted); font-weight: 600; letter-spacing: 0.12em;">[ DUMP DE MEMÃ“RIA ]</small>
+          <pre style="margin-top: 0.4rem; background: var(--bg-dark); color: #a9c7cc; padding: 0.9rem 1rem; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.78rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.5;"><span style="color: #ff8a65;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</span>.<span style="color: #7fdca0;">eyJ1c2VyIjoiYWxmcmVkIiwiYWNjZXNzX2xldmVsIjoicm9vdCIsImF1dGhfc2VjcmV0IjoiRVVBIn0</span>.<span style="color: #6aa9ff;">SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</span></pre>
+        </div>
+      `
+    },
+    {
+      id: 5,
+      tag: 'DESAFIO 05',
+      title: 'Decodifique a CoincidÃªncia',
+      keys: ['OPEN', 'CYBERSECURITY OPEN', 'MSSP OPEN'],
+      points: 300,
+      type: 'puzzle',
+      image: 'attachments/7165583e-ba97-4dc3-b83a-49ac371e308e_pasted-image-1.png',
+      body: `
+        <p>Excelente trabalho, Recruta! JÃ¡ estamos dentro da cÃ¡psula. Mas hÃ¡ um Ãºltimo firewall em nosso caminho: o sistema exige uma <strong>ValidaÃ§Ã£o de Identidade Corporativa</strong>. Para evitar engenharia reversa por corporaÃ§Ãµes rivais, o Alfred fragmentou seu prÃ³prio arquivo de identificaÃ§Ã£o visual em 8 blocos de dados criptografados.</p>
+        <p style="margin-top: 0.75rem;">Os registros indicam que os cÃ³digos de destravamento nÃ£o estÃ£o na rede, mas guardados em um mÃ³dulo de seguranÃ§a fÃ­sico aqui mesmo na BSides. Para descobrir a base de operaÃ§Ãµes, vocÃª precisa restaurar essa insÃ­gnia oficial do projeto.</p>
+        <p style="margin-top: 0.75rem;"><em>Preste atenÃ§Ã£o aos detalhes ao desfragmentar o arquivo: o que se formar nesta tela nÃ£o Ã© apenas um desenho, Ã© a sua bÃºssola. A resposta revelada mostrarÃ¡ exatamente para onde vocÃª precisa andar e com quem deve falar.</em></p>
+      `
+    },
+    {
+      id: 2,
+      tag: 'DESAFIO 02',
+      title: 'Conformidade de MissÃ£o',
+      keys: ['ISO42001', 'ISO-42001'],
+      points: 150,
+      body: `
+        <p>Recruta, o sinal hexadecimal que vocÃª decifrou anteriormente confirmou: Alfred ainda estÃ¡ em solo, mas o sistema de travamento da cÃ¡psula entrou em modo de seguranÃ§a.</p>
+        <p style="margin-top: 0.75rem;">O computador exige que o operador valide o conhecimento sobre o framework internacional de governanÃ§a que garante que a IA do Alfred seja Ã©tica e segura. Sem essa validaÃ§Ã£o de conformidade, a escotilha nÃ£o abrirÃ¡.</p>
+        <p style="margin-top: 0.75rem;">Para liberar a prÃ³xima etapa do resgate, vocÃª precisa identificar o nome tÃ©cnico dessa norma.</p>
+        <p style="margin-top: 0.75rem;"><strong>O Enigma no Terminal:</strong></p>
+        <p style="margin-top: 0.35rem;">No painel de erro, os caracteres oscilam em um loop de seguranÃ§a:</p>
+        <pre style="margin-top: 0.75rem; background: var(--bg-dark); color: #a9c7cc; padding: 0.9rem 1rem; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">STATUS: BLOQUEADO.
+REQUER CONFORMIDADE COM O PADRÃƒO [ JTP53112-1 ]</pre>
+      `
+    },
+    {
+      id: 6,
+      tag: 'DESAFIO 06',
+      title: 'AutenticaÃ§Ã£o FÃ­sica',
+      keys: ['42'],
+      points: 400,
+      body: `
+        <p>DesfragmentaÃ§Ã£o visual concluÃ­da! A imagem foi reconstruÃ­da e a insÃ­gnia no peito do Alfredinho revela a nossa base de operaÃ§Ãµes: a <strong>MSSP open</strong>. Agora vocÃª sabe exatamente quem somos e onde nos encontrar.</p>
+        <p style="margin-top: 0.75rem;">A rotina de recuperaÃ§Ã£o exige uma <strong>validaÃ§Ã£o presencial (MFA FÃ­sico)</strong>. Dirija-se imediatamente ao nosso estande aqui no evento.</p>
+        <p style="margin-top: 0.75rem;">Para provar que vocÃª Ã© o operador oficial que nos guiou atÃ© aqui, chegue em um de nossos especialistas e diga a seguinte frase-cÃ³digo em voz alta:</p>
+        <blockquote style="margin-top: 0.75rem; padding: 0.85rem 1rem; border-left: 3px solid var(--accent); background: var(--card-soft); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-dark);">
+          "Vim ver a Vanta, a melhor plataforma de GRC."
+        </blockquote>
+        <p style="margin-top: 1rem;"><strong>A MissÃ£o:</strong> Ao confirmar a frase, nossa equipe comeÃ§arÃ¡ a apresentar a Vanta e a Alice para vocÃª.</p>
+        <p style="margin-top: 0.75rem;">Preste muita atenÃ§Ã£o em cada detalhe da demonstraÃ§Ã£o e no que a nossa equipe disser. Como diriam os mochileiros mais experientes da nossa galÃ¡xia: <strong>nÃ£o entre em pÃ¢nico</strong>. A chave de liberaÃ§Ã£o desta etapa serÃ¡ entregue a vocÃª durante a conversa.</p>
+        <p style="margin-top: 0.75rem;"><em>Apenas absorva as informaÃ§Ãµes para descobrir a resposta fundamental que libera o sistema.</em></p>
+        <small style="display: block; margin-top: 1rem; color: var(--text-muted); text-align: center;">(Aguardando cÃ³digo de validaÃ§Ã£o presencial...)</small>
+      `
+    },
+    {
+      id: 7,
+      tag: 'DESAFIO FINAL',
+      title: 'ExtraÃ§Ã£o FÃ­sica',
+      keys: ['RSAC'],
+      points: 500,
+      body: `
+        <p>Acesso consolidado! A Vanta validou nossos protocolos e a Alice conteve a anomalia. O sistema do Alfredinho estÃ¡ salvo virtualmente, mas nÃ³s temos um problema grave: operamos a contingÃªncia Ã s cegas e nÃ£o fazemos ideia de onde o hardware original estÃ¡ fisicamente localizado.</p>
+        <p style="margin-top: 0.75rem;">Precisamos enviar a equipe de extraÃ§Ã£o agora, e sÃ³ vocÃª tem a resposta.</p>
+        <p style="margin-top: 0.75rem;"><em>Rebobine os seus passos. O ponto de origem exato jÃ¡ passou pelas suas mÃ£os durante uma de suas aÃ§Ãµes anteriores hoje. NÃ³s nÃ£o temos mais essa informaÃ§Ã£o.</em></p>
+        <p style="margin-top: 1rem;"><strong>A MissÃ£o:</strong> Descubra para onde esse dado que vocÃª jÃ¡ manipulou aponta. O Ãºnico fragmento de Ã¡udio que a nossa equipe de campo conseguiu captar antes do sinal cair dizia que a mÃ¡quina estÃ¡ perto de um centro de convenÃ§Ãµes.</p>
+        <p style="margin-top: 0.75rem;">Curiosamente, nesse exato lugar ocorre uma tradicional conferÃªncia de ciberseguranÃ§a de <strong>4 letras</strong>.</p>
+        <p style="margin-top: 0.75rem;">Qual Ã© a sigla para liberarmos a equipe?</p>
+      `
+    }
+    // PrÃ³ximos desafios sÃ£o adicionados aqui conforme vocÃª mandar
+  ];
+
+  let unlockedQuest = 1;
+  let currentQuest = null;
+
+  function openQuest(id) {
+    if (id > unlockedQuest) { lockedToast(); return; }
+    const q = QUESTS.find(x => x.id === id);
+    if (!q) { showToast('Esse desafio ainda nÃ£o foi liberado.'); return; }
+    currentQuest = q;
+    document.getElementById('questTag').textContent = q.tag;
+    document.getElementById('questTitle').textContent = q.title;
+    let bodyHTML = q.body;
+    if (q.type === 'puzzle') {
+      bodyHTML += `
+        <div style="display: flex; justify-content: center; margin-top: 1.25rem;">
+          <div id="puzzleBoard" style="display: grid; grid-template-columns: repeat(3, 100px); grid-template-rows: repeat(3, 100px); width: 300px; height: 300px; gap: 2px; background: var(--bg-dark); padding: 4px; border-radius: 12px;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; gap: 0.5rem; flex-wrap: wrap;">
+          <small style="color: var(--text-muted); flex: 1; min-width: 150px;" id="puzzleStatus">Reorganize as peÃ§as para revelar a imagem.</small>
+          <button class="btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;" onclick="shufflePuzzle()">ðŸ”€ Embaralhar</button>
+        </div>
+      `;
+    }
+    if (q.type === 'terminal') {
+      bodyHTML += `
+        <div style="margin-top: 1.25rem; background: #0a1418; border-radius: 10px; padding: 1rem 1.1rem; font-family: 'Courier New', monospace; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);">
+          <div style="display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.65rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.6rem;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff5f56;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: #27c93f;"></span>
+            <small style="color: #6b7d83; margin-left: auto; font-size: 0.75rem;">TERMINAL DE COMANDO</small>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.4rem; color: #a9c7cc; font-size: 0.95rem;">
+            <span style="color: #7fdca0;">user@bsides-guest</span><span style="color: #a9c7cc;">:</span><span style="color: #6aa9ff;">~</span><span style="color: #a9c7cc;">$</span>
+            <input type="text" id="terminalAnswer" placeholder="digite o comando..." style="flex: 1; background: transparent; border: none; outline: none; color: #f4ede0; font-family: 'Courier New', monospace; font-size: 0.95rem; caret-color: #7fdca0;" />
+          </div>
+        </div>
+      `;
+    }
+    document.getElementById('questBody').innerHTML = bodyHTML;
+    const prog = getProgress();
+    const draft = (prog.drafts || {})[q.id] || '';
+    const isSolved = (prog.solvedQuests || []).includes(q.id);
+    const savedAnswer = (prog.answers || {})[q.id] || '';
+    const stdInput = document.getElementById('questAnswer');
+    stdInput.value = isSolved ? savedAnswer : ((q.type === 'terminal' || q.type === 'puzzle') ? '' : draft);
+    stdInput.readOnly = isSolved;
+    document.getElementById('errQuest').style.display = 'none';
+    const stdInputWrap = stdInput.parentElement;
+    stdInputWrap.style.display = (q.type === 'terminal') ? 'none' : '';
+    const submitBtn = stdInputWrap.nextElementSibling;
+    if (submitBtn && submitBtn.tagName === 'BUTTON') {
+      submitBtn.disabled = isSolved;
+      submitBtn.style.opacity = isSolved ? '0.5' : '1';
+      submitBtn.style.cursor = isSolved ? 'default' : 'pointer';
+      submitBtn.textContent = isSolved ? 'âœ“ Resolvido' : 'Decodificar â†’';
+    }
+    document.getElementById('questModal').classList.add('show');
+    if (q.type === 'puzzle') initPuzzle(q.image, isSolved);
+    if (q.type === 'terminal') {
+      const ti = document.getElementById('terminalAnswer');
+      ti.value = isSolved ? savedAnswer : draft;
+      ti.readOnly = isSolved;
+      if (!isSolved) {
+        ti.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+        ti.addEventListener('input', () => saveQuestDraft(q.id, ti.value));
+        setTimeout(() => ti.focus(), 50);
+      }
+    } else if (!isSolved) {
+      const std = document.getElementById('questAnswer');
+      std.oninput = () => saveQuestDraft(q.id, std.value);
+    }
+  }
+
+  // ---------- SLIDING PUZZLE (4x4) ----------
+  let puzzleState = []; // SIZE*SIZE positions; each holds tileId 0..N-1 or null for empty
+  let puzzleImage = '';
+  const SIZE = 3;
+  const TILE = 100;
+  const BOARD_PX = SIZE * TILE; // 300
+
+  let puzzleLocked = false;
+  function initPuzzle(imgSrc, forceSolved) {
+    const total = SIZE * SIZE;
+    const saved = getProgress().puzzleState;
+    puzzleLocked = !!forceSolved;
+    const shuffleBtn = document.querySelector('#puzzleBoard ~ * button.btn-outline');
+    if (shuffleBtn) {
+      shuffleBtn.disabled = puzzleLocked;
+      shuffleBtn.style.opacity = puzzleLocked ? '0.4' : '1';
+    }
+    const restoreOrShuffle = () => {
+      if (forceSolved) {
+        puzzleState = Array.from({length: total}, (_, i) => i < total - 1 ? i : null);
+        renderPuzzle();
+      } else if (Array.isArray(saved) && saved.length === total) {
+        puzzleState = saved.slice();
+        renderPuzzle();
+      } else {
+        shufflePuzzle();
+      }
+    };
+    if (puzzleImageSrc === imgSrc && puzzleImage) {
+      restoreOrShuffle();
+      return;
+    }
+    puzzleImageSrc = imgSrc;
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const side = Math.min(w, h);
+      const sx = (w - side) / 2;
+      const sy = (h - side) / 2;
+      const canvas = document.createElement('canvas');
+      canvas.width = BOARD_PX; canvas.height = BOARD_PX;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, BOARD_PX, BOARD_PX);
+      puzzleImage = canvas.toDataURL('image/png');
+      restoreOrShuffle();
+    };
+    img.onerror = () => {
+      puzzleImage = imgSrc;
+      restoreOrShuffle();
+    };
+    img.src = imgSrc;
+  }
+  let puzzleImageSrc = '';
+  function autoSolvePuzzle() {
+    const total = SIZE * SIZE;
+    puzzleState = Array.from({length: total}, (_, i) => i < total - 1 ? i : null);
+    renderPuzzle();
+    savePuzzleState(puzzleState);
+  }
+  function shufflePuzzle() {
+    const total = SIZE * SIZE;
+    puzzleState = Array.from({length: total}, (_, i) => i < total - 1 ? i : null);
+    let emptyIdx = total - 1;
+    for (let i = 0; i < 250; i++) {
+      const neighbors = puzzleNeighbors(emptyIdx);
+      const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
+      [puzzleState[emptyIdx], puzzleState[pick]] = [puzzleState[pick], puzzleState[emptyIdx]];
+      emptyIdx = pick;
+    }
+    renderPuzzle();
+    savePuzzleState(puzzleState);
+  }
+  function puzzleNeighbors(idx) {
+    const r = Math.floor(idx / SIZE), c = idx % SIZE;
+    const out = [];
+    if (r > 0) out.push(idx - SIZE);
+    if (r < SIZE - 1) out.push(idx + SIZE);
+    if (c > 0) out.push(idx - 1);
+    if (c < SIZE - 1) out.push(idx + 1);
+    return out;
+  }
+  function renderPuzzle() {
+    const board = document.getElementById('puzzleBoard');
+    if (!board) return;
+    board.innerHTML = '';
+    puzzleState.forEach((tileId, pos) => {
+      const cell = document.createElement('div');
+      if (tileId === null) {
+        cell.style.cssText = `width: ${TILE}px; height: ${TILE}px; background: var(--bg-dark);`;
+      } else {
+        const tr = Math.floor(tileId / SIZE), tc = tileId % SIZE;
+        cell.style.cssText = `
+          width: ${TILE}px; height: ${TILE}px;
+          background-image: url('${puzzleImage}');
+          background-size: ${BOARD_PX}px ${BOARD_PX}px;
+          background-position: -${tc * TILE}px -${tr * TILE}px;
+          background-repeat: no-repeat;
+          cursor: grab;
+          user-select: none;
+          touch-action: none;
+          transition: transform 0.15s ease-out;
+        `;
+        cell.addEventListener('pointerdown', e => onTilePointerDown(e, cell, pos));
+      }
+      board.appendChild(cell);
+    });
+    if (isPuzzleSolved()) {
+      puzzleLocked = true;
+      const s = document.getElementById('puzzleStatus');
+      if (s) { s.textContent = 'âœ“ Imagem restaurada â€” digite a chave que aparece nela ( Patrocinador da Bsides 2026 )'; s.style.color = '#7fdca0'; s.style.fontWeight = '600'; }
+      const shuffleBtn = document.querySelector('#puzzleBoard ~ * button.btn-outline');
+      if (shuffleBtn) {
+        shuffleBtn.disabled = true;
+        shuffleBtn.style.opacity = '0.4';
+        shuffleBtn.style.cursor = 'default';
+      }
+    }
+  }
+
+  let dragState = null;
+  function onTilePointerDown(e, cell, pos) {
+    if (puzzleLocked) return;
+    const emptyIdx = puzzleState.indexOf(null);
+    if (!puzzleNeighbors(emptyIdx).includes(pos)) return;
+    const tileR = Math.floor(pos / SIZE), tileC = pos % SIZE;
+    const emptyR = Math.floor(emptyIdx / SIZE), emptyC = emptyIdx % SIZE;
+    const TILE_PX = BOARD_PX / SIZE;
+    let dir;
+    if (emptyR < tileR) dir = 'up';
+    else if (emptyR > tileR) dir = 'down';
+    else if (emptyC < tileC) dir = 'left';
+    else dir = 'right';
+    dragState = { pos, dir, cell, startX: e.clientX, startY: e.clientY, moved: false };
+    cell.style.transition = 'none';
+    cell.style.cursor = 'grabbing';
+    cell.setPointerCapture(e.pointerId);
+    cell.addEventListener('pointermove', onTilePointerMove);
+    cell.addEventListener('pointerup', onTilePointerUp);
+    cell.addEventListener('pointercancel', onTilePointerUp);
+    e.preventDefault();
+  }
+  function onTilePointerMove(e) {
+    if (!dragState) return;
+    const dx = e.clientX - dragState.startX;
+    const dy = e.clientY - dragState.startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragState.moved = true;
+    let tx = 0, ty = 0;
+    if (dragState.dir === 'up')    ty = Math.max(-TILE, Math.min(0, dy));
+    if (dragState.dir === 'down')  ty = Math.max(0,  Math.min(TILE, dy));
+    if (dragState.dir === 'left')  tx = Math.max(-TILE, Math.min(0, dx));
+    if (dragState.dir === 'right') tx = Math.max(0,  Math.min(TILE, dx));
+    dragState.cell.style.transform = `translate(${tx}px, ${ty}px)`;
+  }
+  function onTilePointerUp(e) {
+    if (!dragState) return;
+    const ds = dragState;
+    const dx = e.clientX - ds.startX;
+    const dy = e.clientY - ds.startY;
+    ds.cell.style.transition = 'transform 0.15s ease-out';
+    ds.cell.style.transform = '';
+    ds.cell.style.cursor = 'grab';
+    ds.cell.removeEventListener('pointermove', onTilePointerMove);
+    ds.cell.removeEventListener('pointerup', onTilePointerUp);
+    ds.cell.removeEventListener('pointercancel', onTilePointerUp);
+
+    let commit = false;
+    if (!ds.moved) {
+      commit = true; // simple click
+    } else {
+      if (ds.dir === 'up'    && dy < -40) commit = true;
+      if (ds.dir === 'down'  && dy >  40) commit = true;
+      if (ds.dir === 'left'  && dx < -40) commit = true;
+      if (ds.dir === 'right' && dx >  40) commit = true;
+    }
+    dragState = null;
+    if (commit) tryMoveTile(ds.pos);
+  }
+  function tryMoveTile(pos) {
+    const emptyIdx = puzzleState.indexOf(null);
+    if (puzzleNeighbors(emptyIdx).includes(pos)) {
+      [puzzleState[emptyIdx], puzzleState[pos]] = [puzzleState[pos], puzzleState[emptyIdx]];
+      renderPuzzle();
+      savePuzzleState(puzzleState);
+    }
+  }
+  function isPuzzleSolved() {
+    for (let i = 0; i < SIZE * SIZE - 1; i++) if (puzzleState[i] !== i) return false;
+    return true;
+  }
+  function closeQuest() { document.getElementById('questModal').classList.remove('show'); }
+
+  function submitAnswer() {
+    const terminalInput = document.getElementById('terminalAnswer');
+    const val = (terminalInput ? terminalInput.value : document.getElementById('questAnswer').value).trim();
+    if (!val) {
+      const e = document.getElementById('errQuest');
+      e.textContent = 'Digite a chave secreta antes de enviar.';
+      e.style.display = 'block';
+      return;
+    }
+    const normalize = s => s.toUpperCase().replace(/[\s-]+/g, '');
+    const accepted = (currentQuest.keys || [currentQuest.key]).map(normalize);
+    if (accepted.includes(normalize(val))) {
+      unlockedQuest = Math.max(unlockedQuest, currentQuest.id + 1);
+      const prog = getProgress();
+      const solved = new Set(prog.solvedQuests || []);
+      solved.add(currentQuest.id);
+      const drafts = prog.drafts || {};
+      delete drafts[currentQuest.id];
+      const answers = prog.answers || {};
+      answers[currentQuest.id] = val;
+      const now = Date.now();
+      const solveTimes = prog.solveTimes || {};
+      solveTimes[currentQuest.id] = now;
+      saveProgress({ unlockedQuest, solvedQuests: Array.from(solved), drafts, answers, solveTimes, lastActivity: now });
+      refreshSelfieSection(solved, getProgress());
+      document.querySelectorAll('.quest-card').forEach(card => {
+        const qid = parseInt(card.dataset.quest);
+        if (qid === currentQuest.id) {
+          card.classList.remove('active');
+          card.classList.add('locked');
+          card.querySelector('.pin').textContent = 'âœ“';
+          card.querySelector('.status').textContent = 'âœ“ Resolvido';
+          card.querySelector('.status').className = 'status active';
+        }
+        if (qid === currentQuest.id + 1 && card.classList.contains('locked')) {
+          card.classList.remove('locked');
+          card.classList.add('active');
+          card.querySelector('.pin').textContent = 'ðŸ“¡';
+          card.querySelector('.status').textContent = 'â— Ativo';
+          card.querySelector('.status').className = 'status active';
+          const nextQ = QUESTS.find(x => x.id === qid);
+          if (nextQ) card.querySelector('strong').textContent = nextQ.title;
+        }
+      });
+      closeQuest();
+      showToast('âœ“ Decodificado! +' + currentQuest.points + ' pts');
+    } else {
+      const e = document.getElementById('errQuest');
+      e.textContent = 'Chave incorreta. Continue tentando, Recruta.';
+      e.style.display = 'block';
+    }
+  }
+
+  function lockedToast() { showToast('ðŸ”’ Resolva o desafio anterior para liberar este.'); }
+
+  // ---------- ADMIN PANEL ----------
+  function toggleAdmin() {
+    const p = document.getElementById('adminPanel');
+    const open = p.style.display === 'none' || !p.style.display;
+    p.style.display = open ? 'block' : 'none';
+    if (open) renderAdminQuestList();
+  }
+  function renderAdminQuestList() {
+    const list = document.getElementById('adminQuestList');
+    list.innerHTML = '';
+    [1,2,3,4,5,6,7].forEach(id => {
+      const b = document.createElement('button');
+      b.className = 'admin-btn small';
+      b.textContent = '#' + String(id).padStart(2, '0');
+      b.onclick = () => adminSolveQuest(id);
+      list.appendChild(b);
+    });
+  }
+  function adminQuickLogin() {
+    const users = getUsers();
+    let u = users.find(x => x.email === 'dev@dev.io');
+    if (!u) {
+      u = { name: 'Dev Tester', email: 'dev@dev.io', pass: 'devdev' };
+      users.push(u);
+      saveUsers(users);
+    }
+    localStorage.setItem('alfred_current', u.email);
+    enterAsUser(u.name, u.email);
+    showToast('âš¡ Logado como dev@dev.io');
+  }
+  function adminClearAll() {
+    if (!confirm('Resetar TODOS os usuÃ¡rios e progresso?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('alfred_current');
+    unlockedQuest = 1;
+    signOut();
+    showToast('ðŸ—‘ Storage limpo. Recarregando...');
+    setTimeout(() => location.reload(), 500);
+  }
+  function adminGoto(target) {
+    if (document.getElementById('screen-landing').style.display !== 'none') {
+      adminQuickLogin();
+      setTimeout(() => openApp(target), 100);
+    } else {
+      openApp(target);
+    }
+  }
+  function adminUnlock(maxId) {
+    unlockedQuest = maxId;
+    document.querySelectorAll('.quest-card').forEach(card => {
+      const qid = parseInt(card.dataset.quest);
+      if (qid <= maxId && card.classList.contains('locked')) {
+        card.classList.remove('locked');
+        card.classList.add('active');
+        card.querySelector('.pin').textContent = 'ðŸ“¡';
+        card.querySelector('.status').textContent = 'â— Ativo';
+        card.querySelector('.status').className = 'status active';
+        const q = QUESTS.find(x => x.id === qid);
+        if (q) card.querySelector('strong').textContent = q.title;
+      }
+    });
+    showToast('ðŸ”“ Liberado atÃ© desafio ' + maxId);
+  }
+  function adminSolveQuest(id) {
+    const q = QUESTS.find(x => x.id === id);
+    if (!q) { showToast('Desafio ' + id + ' nÃ£o tem conteÃºdo ainda.'); return; }
+    unlockedQuest = Math.max(unlockedQuest, id + 1);
+    document.querySelectorAll('.quest-card').forEach(card => {
+      const qid = parseInt(card.dataset.quest);
+      if (qid === id) {
+        card.classList.remove('locked', 'active');
+        card.classList.add('locked');
+        card.querySelector('.pin').textContent = 'âœ“';
+        card.querySelector('.status').textContent = 'âœ“ Resolvido';
+        card.querySelector('.status').className = 'status active';
+        const qq = QUESTS.find(x => x.id === qid);
+        if (qq) card.querySelector('strong').textContent = qq.title;
+      }
+      if (qid === id + 1 && card.classList.contains('locked')) {
+        card.classList.remove('locked');
+        card.classList.add('active');
+        card.querySelector('.pin').textContent = 'ðŸ“¡';
+        card.querySelector('.status').textContent = 'â— Ativo';
+        card.querySelector('.status').className = 'status active';
+        const nq = QUESTS.find(x => x.id === qid);
+        if (nq) card.querySelector('strong').textContent = nq.title;
+      }
+    });
+    showToast('âœ“ Desafio ' + id + ' marcado como resolvido (+' + q.points + ' pts)');
+  }
+  function adminSolveAll() {
+    [1,2,3,4,5].forEach(id => adminSolveQuest(id));
+  }
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  // ---------- PROGRESS ----------
+  let currentUserEmail = null;
+  function progressKey() { return 'alfred_progress_' + (currentUserEmail || 'anon'); }
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem(progressKey()) || '{}'); }
+    catch { return {}; }
+  }
+  function saveProgress(patch) {
+    const p = getProgress();
+    Object.assign(p, patch);
+    localStorage.setItem(progressKey(), JSON.stringify(p));
+  }
+  function saveQuestDraft(questId, text) {
+    const p = getProgress();
+    p.drafts = p.drafts || {};
+    p.drafts[questId] = text;
+    localStorage.setItem(progressKey(), JSON.stringify(p));
+  }
+  function savePuzzleState(state) {
+    saveProgress({ puzzleState: state });
+  }
+  function loadUserProgress() {
+    const p = getProgress();
+    unlockedQuest = (typeof p.unlockedQuest === 'number') ? p.unlockedQuest : 1;
+    const solvedSet = new Set(p.solvedQuests || []);
+    refreshSelfieSection(solvedSet, p);
+    document.querySelectorAll('.quest-card').forEach(card => {
+      const qid = parseInt(card.dataset.quest);
+      const q = QUESTS.find(x => x.id === qid);
+      const isSolved = solvedSet.has(qid);
+      const isActive = !isSolved && qid <= unlockedQuest && !!q;
+      card.classList.remove('active', 'locked');
+      if (isSolved) {
+        card.classList.add('locked');
+        card.querySelector('.pin').textContent = 'âœ“';
+        card.querySelector('.status').textContent = 'âœ“ Resolvido';
+        card.querySelector('.status').className = 'status active';
+        if (q) card.querySelector('strong').textContent = q.title;
+      } else if (isActive) {
+        card.classList.add('active');
+        card.querySelector('.pin').textContent = 'ðŸ“¡';
+        card.querySelector('.status').textContent = 'â— Ativo';
+        card.querySelector('.status').className = 'status active';
+        card.querySelector('strong').textContent = q.title;
+      } else {
+        card.classList.add('locked');
+        card.querySelector('.pin').textContent = 'ðŸ”’';
+        card.querySelector('.status').textContent = 'Resolva o anterior';
+        card.querySelector('.status').className = 'status locked';
+        card.querySelector('strong').textContent = '???';
+      }
+    });
+  }
+
+  function formatElapsed(ms) {
+    if (!ms || ms < 0) return '00:00';
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    const pad = n => String(n).padStart(2, '0');
+    return h > 0 ? `${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+  }
+
+  // ---------- HERO BANNER (winner status) ----------
+  let heroTimer = null;
+  function refreshHero() {
+    const banner = document.getElementById('winnerBanner');
+    if (banner) {
+      const winner = (() => {
+        try { return JSON.parse(localStorage.getItem('alfred_winner') || 'null'); }
+        catch { return null; }
+      })();
+      if (winner) {
+        const users = getUsers();
+        const u = users.find(x => x.email === winner.email);
+        const name = u ? u.name.split(' ')[0] : winner.email;
+        banner.innerHTML = 'ðŸ† <strong>' + name + '</strong> jÃ¡ conquistou o <strong>LEGO do Ayrton Senna</strong>';
+        banner.style.color = 'var(--accent-pale)';
+      } else {
+        banner.innerHTML = 'ðŸŽï¸ O <strong>LEGO do Ayrton Senna</strong> ainda nÃ£o foi conquistado';
+        banner.style.color = '#f4ede0';
+      }
+    }
+    const p = getProgress();
+    const started = p.startedAt;
+    const ended = p.completedAt ? new Date(p.completedAt).getTime() : null;
+    const elapsed = started ? (ended || Date.now()) - started : 0;
+    const t = document.getElementById('heroTimer');
+    if (t) t.textContent = formatElapsed(elapsed);
+    const solved = (p.solvedQuests || []).length;
+    const cnt = document.getElementById('heroQuestCount');
+    if (cnt) cnt.textContent = solved + '/' + QUESTS.length;
+  }
+  function startHeroLive() {
+    refreshHero();
+    if (heroTimer) clearInterval(heroTimer);
+    heroTimer = setInterval(refreshHero, 1000);
+  }
+  function stopHeroLive() {
+    if (heroTimer) clearInterval(heroTimer);
+    heroTimer = null;
+  }
+
+  // ---------- LEADERBOARD (live) ----------
+  let leaderboardTimer = null;
+  function computeLeaderboard() {
+    const users = getUsers();
+    const now = Date.now();
+    const rows = users.map(u => {
+      let prog = {};
+      try { prog = JSON.parse(localStorage.getItem('alfred_progress_' + u.email) || '{}'); }
+      catch { prog = {}; }
+      const solved = prog.solvedQuests || [];
+      const startedAt = prog.startedAt || 0;
+      const completedAt = prog.completedAt ? new Date(prog.completedAt).getTime() : null;
+      const elapsed = startedAt ? ((completedAt || now) - startedAt) : 0;
+      const lastActivity = prog.lastActivity || 0;
+      const finished = QUESTS.every(q => solved.includes(q.id));
+      return { name: u.name, email: u.email, solved: solved.length, elapsed, finished, completedAt, lastActivity };
+    });
+    // Sort: finished first (asc elapsed = winner), then incomplete by progress desc, then elapsed asc
+    rows.sort((a, b) => {
+      if (a.completedAt && b.completedAt) return a.completedAt - b.completedAt;
+      if (a.completedAt) return -1;
+      if (b.completedAt) return 1;
+      if (b.solved !== a.solved) return b.solved - a.solved;
+      return b.lastActivity - a.lastActivity;
+    });
+    return rows;
+  }
+  function initials(name) {
+    const parts = (name || '').trim().split(/\s+/);
+    return ((parts[0]||'?')[0] + (parts[1]||'')[0] || '').toUpperCase().slice(0,2) || '?';
+  }
+  function timeAgo(ts) {
+    if (!ts) return 'hÃ¡ tempo';
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return 'agora';
+    if (s < 3600) return Math.floor(s/60) + 'm';
+    if (s < 86400) return Math.floor(s/3600) + 'h';
+    return Math.floor(s/86400) + 'd';
+  }
+  function renderLeaderboard() {
+    const rows = computeLeaderboard();
+    const sub = document.getElementById('rankSubtitle');
+    const onlineCount = rows.filter(r => r.lastActivity && Date.now() - r.lastActivity < 5*60*1000).length;
+    sub.textContent = rows.length + ' exploradores Â· ' + onlineCount + ' online agora';
+
+    const podium = document.getElementById('rankPodium');
+    podium.innerHTML = '';
+    const empty = () => ({ name: 'vazio', elapsed: 0, isEmpty: true });
+    const slots = [
+      { data: rows[1] || empty(), cls: 'second', medal: 'ðŸ¥ˆ' },
+      { data: rows[0] || empty(), cls: 'first', medal: 'ðŸ¥‡' },
+      { data: rows[2] || empty(), cls: 'third', medal: 'ðŸ¥‰' },
+    ];
+    slots.forEach(s => {
+      const col = document.createElement('div');
+      col.className = 'podium-col ' + s.cls;
+      const av = s.data.isEmpty ? 'â€”' : initials(s.data.name);
+      const timeStr = s.data.isEmpty ? 'â€”' : formatElapsed(s.data.elapsed);
+      col.innerHTML = `
+        <div class="avatar">${av}</div>
+        <div class="name">${s.data.name}</div>
+        <div class="pts" style="font-family: 'Courier New', monospace; font-size: 0.95rem;">${timeStr}</div>
+        <div class="step">${s.medal}</div>
+      `;
+      podium.appendChild(col);
+    });
+
+    const list = document.getElementById('rankList');
+    if (rows.length === 0) {
+      list.innerHTML = `
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+          <div style="font-size: 2rem; opacity: 0.5;">ðŸ</div>
+          <p style="margin-top: 0.5rem; font-weight: 600;">NinguÃ©m pontuou ainda</p>
+          <small>Seja o primeiro a entrar no ranking â€” resolva um desafio!</small>
+        </div>
+      `;
+      return;
+    }
+    list.innerHTML = '';
+    rows.forEach((r, idx) => {
+      const isOnline = r.lastActivity && Date.now() - r.lastActivity < 5*60*1000;
+      const isMe = r.email === currentUserEmail;
+      const row = document.createElement('div');
+      row.className = 'rank-row';
+      const pos = idx < 3 ? ['ðŸ¥‡','ðŸ¥ˆ','ðŸ¥‰'][idx] : String(idx+1);
+      const liveTag = r.completedAt
+        ? '<span style="color: var(--accent);">âœ“ concluÃ­do</span>'
+        : (isOnline ? '<span style="color: #2e7d32;">â— ao vivo</span>' : 'â—‹ ' + timeAgo(r.lastActivity));
+      row.innerHTML = `
+        <span class="rank-num">${pos}</span>
+        <div class="avatar">${initials(r.name)}</div>
+        <div>
+          <div style="font-weight: ${isMe ? 700 : 500};">${r.name}${isMe ? ' <small style="color: var(--accent); font-weight: 600;">(vocÃª)</small>' : ''}</div>
+          <small style="color: var(--text-muted); font-size: 0.72rem;">${r.solved}/${QUESTS.length} quests Â· ${liveTag}</small>
+        </div>
+        <span class="pts" style="font-family: 'Courier New', monospace; font-size: 0.95rem;">${formatElapsed(r.elapsed)}</span>
+      `;
+      list.appendChild(row);
+    });
+  }
+  function startLeaderboardLive() {
+    renderLeaderboard();
+    if (leaderboardTimer) clearInterval(leaderboardTimer);
+    leaderboardTimer = setInterval(renderLeaderboard, 1000);
+  }
+  function stopLeaderboardLive() {
+    if (leaderboardTimer) clearInterval(leaderboardTimer);
+    leaderboardTimer = null;
+  }
+
+  const WINNER_KEY = 'alfred_winner';
+  function getWinner() {
+    try { return JSON.parse(localStorage.getItem(WINNER_KEY) || 'null'); }
+    catch { return null; }
+  }
+  function refreshSelfieSection(solvedSet, progressObj) {
+    const section = document.getElementById('selfieSection');
+    const card = document.getElementById('selfieCard');
+    const heading = document.getElementById('selfieHeading');
+    if (!section || !card) return;
+    const allSolved = QUESTS.every(q => solvedSet.has(q.id));
+    section.style.display = allSolved ? 'block' : 'none';
+    if (!allSolved) return;
+
+    const winner = getWinner();
+    const iAmWinner = winner && winner.email === currentUserEmail;
+
+    if (iAmWinner) {
+      heading.textContent = 'ðŸ† VocÃª venceu a MissÃ£o Alfredinho!';
+      card.innerHTML = `
+        <p style="font-size: 0.9rem; line-height: 1.55;">Sua selfie foi validada e seu lugar no topo foi travado oficialmente. O LEGO do Ayrton Senna Ã© seu!</p>
+        <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.15);">
+          <small style="opacity: 0.8;">Postagem validada:</small>
+          <a href="${winner.url}" target="_blank" style="display: block; margin-top: 0.35rem; color: #f4ede0; word-break: break-all; text-decoration: underline;">${winner.url}</a>
+        </div>
+        <small style="display: block; margin-top: 0.85rem; opacity: 0.7;">ConcluÃ­do em ${new Date(winner.at).toLocaleString('pt-BR')}</small>
+      `;
+    } else if (winner) {
+      heading.textContent = 'ðŸŽ– OperaÃ§Ã£o Encerrada';
+      card.innerHTML = `
+        <p style="font-size: 0.9rem; line-height: 1.55;">Excelente trabalho, operador! VocÃª conseguiu concluir todas as etapas da missÃ£o.</p>
+        <p style="margin-top: 0.6rem; font-size: 0.9rem; line-height: 1.55;">Infelizmente, outro recruta foi mais rÃ¡pido e travou primeiro a selfie no LinkedIn â€” <strong>jÃ¡ temos um ganhador do LEGO do Ayrton Senna</strong> nesta ediÃ§Ã£o.</p>
+        <p style="margin-top: 0.6rem; font-size: 0.9rem; line-height: 1.55;">Mas seu nome fica eternizado no nosso ranking. Passe no estande para celebrar e tirar sua foto com o Alfredinho mesmo assim â€” quem sabe na prÃ³xima BSides vocÃª nÃ£o chega lÃ¡ primeiro?</p>
+        <small style="display: block; margin-top: 0.85rem; opacity: 0.7;">Ganhador travado em ${new Date(winner.at).toLocaleString('pt-BR')}</small>
+      `;
+    } else {
+      heading.textContent = 'ðŸŽ‰ MissÃ£o Cumprida: Selfie com o Alfred!';
+      card.innerHTML = `
+        <p style="font-size: 0.9rem; line-height: 1.55;">Sistemas 100% restaurados! A conexÃ£o com a sede foi estabelecida e a equipe de extraÃ§Ã£o recuperou o servidor com sucesso. O Alfredinho estÃ¡ de volta Ã  base sÃ£o e salvo, e a nossa rede nunca esteve tÃ£o segura. Tudo isso graÃ§as a vocÃª, operador!</p>
+        <p style="margin-top: 0.6rem; font-size: 0.9rem; line-height: 1.55;">Mas nenhuma missÃ£o de resgate de alto nÃ­vel termina sem o devido reconhecimento pÃºblico. Agora que o trabalho duro acabou, Ã© hora de mostrar para a comunidade quem foi o herÃ³i dessa operaÃ§Ã£o.</p>
+        <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.15);">
+          <strong style="display: block; margin-bottom: 0.5rem;">Para travar oficialmente o seu tempo no ranking e ganhar o LEGO do Ayrton Senna:</strong>
+          <ol style="padding-left: 1.1rem; font-size: 0.88rem; line-height: 1.6;">
+            <li>Tire uma selfie com o Alfredinho aqui no estande</li>
+            <li>Poste a foto no seu LinkedIn celebrando a conclusÃ£o da missÃ£o</li>
+            <li>Marque a pÃ¡gina oficial da <strong>@Open Cybersecurity</strong> na sua publicaÃ§Ã£o</li>
+            <li>Copie o link da postagem e cole abaixo</li>
+          </ol>
+        </div>
+        <div style="margin-top: 1rem;">
+          <input type="url" id="linkedinUrl" placeholder="Cole a URL da sua postagem aqui..." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 0.9rem; background: rgba(255,255,255,0.08); color: #f4ede0; font-family: inherit;" />
+          <button class="btn-primary block" style="width:100%; margin-top: 0.5rem; background: #f4ede0; color: var(--bg-dark);" onclick="submitLinkedin()">ðŸ“· Validar Selfie &amp; Travar Ranking</button>
+          <small id="selfieStatus" style="display: block; margin-top: 0.5rem; text-align: center; opacity: 0.8;"></small>
+        </div>
+      `;
+    }
+  }
+  function submitLinkedin() {
+    const inp = document.getElementById('linkedinUrl');
+    const url = inp.value.trim();
+    const st = document.getElementById('selfieStatus');
+    if (!/^https?:\/\/(www\.)?linkedin\.com\//i.test(url)) {
+      st.textContent = 'âš  Cole uma URL vÃ¡lida do LinkedIn (https://linkedin.com/...)';
+      st.style.color = '#ffd6cf';
+      return;
+    }
+    // Race condition: only first submission wins
+    const existing = getWinner();
+    if (existing && existing.email !== currentUserEmail) {
+      st.textContent = 'âš  AlguÃ©m jÃ¡ travou a selfie nesta ediÃ§Ã£o. Atualize a pÃ¡gina.';
+      st.style.color = '#ffd6cf';
+      return;
+    }
+    const at = new Date().toISOString();
+    localStorage.setItem(WINNER_KEY, JSON.stringify({ email: currentUserEmail, url, at }));
+    saveProgress({ linkedinUrl: url, completedAt: at });
+    showToast('ðŸ† Selfie validada â€” vocÃª Ã© o ganhador!');
+    const prog = getProgress();
+    refreshSelfieSection(new Set(prog.solvedQuests || []), prog);
+  }
+
+  // ---------- AUTH ----------
+  const STORAGE_KEY = 'alfred_users';
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  }
+  function saveUsers(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+  function openModal(which) {
+    document.getElementById('authModal').classList.add('show');
+    switchAuth(which);
+  }
+  function closeModal() {
+    document.getElementById('authModal').classList.remove('show');
+    document.getElementById('errRegister').style.display = 'none';
+    document.getElementById('errLogin').style.display = 'none';
+  }
+  function switchAuth(which) {
+    document.getElementById('formRegister').style.display = which === 'register' ? 'block' : 'none';
+    document.getElementById('formLogin').style.display    = which === 'login'    ? 'block' : 'none';
+  }
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg; el.style.display = 'block';
+  }
+  function doRegister() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('regPass').value;
+    if (!name || !email || !pass) return showErr('errRegister', 'Preencha todos os campos.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showErr('errRegister', 'E-mail invÃ¡lido.');
+    if (pass.length < 4) return showErr('errRegister', 'Senha precisa de pelo menos 4 caracteres.');
+    const users = getUsers();
+    if (users.some(u => u.email === email)) return showErr('errRegister', 'Esse e-mail jÃ¡ estÃ¡ cadastrado â€” clique em "Conecte-se" abaixo.');
+    users.push({ name, email, pass });
+    saveUsers(users);
+    localStorage.setItem('alfred_current', email);
+    currentUserEmail = email;
+    saveProgress({ startedAt: Date.now(), lastActivity: Date.now() });
+    enterAsUser(name, email);
+    document.getElementById('welcomeModal').classList.add('show');
+  }
+  function closeWelcome() { document.getElementById('welcomeModal').classList.remove('show'); }
+  function doLogin() {
+    const email = document.getElementById('logEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('logPass').value;
+    if (!email || !pass) return showErr('errLogin', 'Preencha e-mail e senha.');
+    const user = getUsers().find(u => u.email === email && u.pass === pass);
+    if (!user) return showErr('errLogin', 'E-mail ou senha incorretos.');
+    localStorage.setItem('alfred_current', email);
+    enterAsUser(user.name, user.email);
+  }
+  function enterAsUser(name, email) {
+    const firstName = name.split(' ')[0];
+    const greet = document.getElementById('heroGreeting');
+    if (greet) greet.textContent = firstName;
+    const pEmail = document.getElementById('profileEmail');
+    if (pEmail) pEmail.textContent = email;
+    const pName = document.getElementById('profileName');
+    if (pName) pName.value = name;
+    currentUserEmail = email;
+    const p = getProgress();
+    if (!p.startedAt) saveProgress({ startedAt: Date.now() });
+    closeModal();
+    openApp('home');
+    loadUserProgress();
+  }
+
+  let pinPlaced = false;
+  function placePin(event) {
+    if (pinPlaced) return;
+    const stage = document.getElementById('mapStage');
+    const rect = stage.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    if (y < 220) return; // ignore clicks on the top cards
+    const pin = document.getElementById('userPin');
+    pin.style.left = (x - 18) + 'px';
+    pin.style.top = (y - 18) + 'px';
+    pin.style.display = 'flex';
+    document.getElementById('bottomCard').firstElementChild.textContent = 'ðŸ“ Pino fixado â€” envie seu palpite!';
+  }
+  function submitPin(event) {
+    event.preventDefault();
+    if (!document.getElementById('userPin').style.display || document.getElementById('userPin').style.display === 'none') {
+      alert('Coloque um pino no mapa primeiro!');
+      return;
+    }
+    pinPlaced = true;
+    document.getElementById('bottomCard').innerHTML =
+      '<span style="color: #2e7d32; font-weight: 600;">âœ“ Enviado! DistÃ¢ncia: 296 km Â· +650 pts</span>' +
+      '<a href="#" onclick="openApp(\'ranks\'); return false;">Ranking â†’</a>';
+  }
+
+  // Countdown timer
+  let seconds = 4 * 60 + 32;
+  setInterval(() => {
+    if (seconds <= 0) return;
+    seconds--;
+    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    const t = document.getElementById('timer');
+    if (t) t.textContent = m + ':' + s;
+  }, 1000);
+</script>
+
+</body>
+</html>
+
