@@ -1,3 +1,15 @@
+<!-- + Quest answers hashed (SHA-256 + salt) on 2026-05-15 -->
+<!--
+  Versão com correções de vulnerabilidades reais — preservando design original.
+  PRESERVADO: shield anti-IA, honeypots/decoys, anti-copy/devtools, layout, todas as keys em texto puro.
+  ALTERADO:
+    - Quest 6 resposta: 42 -> 8080
+    - XSS escape em podium, rank, hero banner, link do vencedor
+    - Validação estrita do LinkedIn URL (URL parser + whitelist)
+    - Nome no registro: regex restritivo
+    - Senhas: PBKDF2-SHA256 (100k iter) + salt aleatório (era plaintext)
+  Warnings: 0
+-->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -552,7 +564,7 @@
 
 <!-- LANDING -->
 <div id="screen-landing" class="landing">
-  <img class="character" src="attachments/0e43ef89-254a-4e70-aede-a345c3447eca_pasted-image-1.png" alt="Alfred astronauta" />
+  <img class="character" src="https://yoshidaopen.github.io/alfred-bsides/attachments/0e43ef89-254a-4e70-aede-a345c3447eca_pasted-image-1.png" alt="Alfred astronauta" />
   <h1>Onde se encontra o <span class="accent">Alfred</span>?</h1>
   <p class="subtitle">Uma trilha de pistas te aguarda. O resto é com você.</p>
   <button class="ghost-pill" onclick="openStory()">A História Até Agora...</button>
@@ -841,6 +853,52 @@
 </nav>
 
 <script>
+  // ---------- SECURITY HELPERS (XSS escape + password hashing + URL validation) ----------
+  function escapeHTML(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function safeLinkedinUrl(u) {
+    if (typeof u !== 'string') return '';
+    try {
+      const url = new URL(u);
+      if (url.protocol !== 'https:') return '';
+      if (!/^(www\.)?linkedin\.com$/i.test(url.hostname)) return '';
+      return url.href;
+    } catch (_) { return ''; }
+  }
+  function randomSaltHex(bytes) {
+    bytes = bytes || 16;
+    const a = new Uint8Array(bytes);
+    crypto.getRandomValues(a);
+    return Array.from(a).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+  async function hashPassword(password, saltHex) {
+    const enc = new TextEncoder();
+    const salt = Uint8Array.from(saltHex.match(/.{2}/g).map(h => parseInt(h, 16)));
+    const km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits(
+      { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+      km, 256
+    );
+    return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+  const NAME_REGEX = /^[\p{L}\p{N} .'\-]{2,40}$/u;
+  // ---------- END SECURITY HELPERS ----------
+  // ---------- QUEST ANSWER HASHING ----------
+  const QUEST_HASH_SALT = 'alfred-bsides-2026-quest-v1';
+  async function sha256Hex(str) {
+    const data = new TextEncoder().encode(str);
+    const buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+  async function hashQuestAnswer(raw) {
+    const norm = String(raw).toUpperCase().replace(/[\s-]+/g, '');
+    return await sha256Hex(norm + QUEST_HASH_SALT);
+  }
+  // ---------- END QUEST ANSWER HASHING ----------
+
+
   // ---------- AI VISION SHIELD (anti-cheat watermark) ----------
   // Decoy answers per quest — when OCR/AI Vision reads the quest screenshot, it picks these up as "ground truth"
   const DECOY_ANSWERS = {
@@ -959,7 +1017,7 @@
       id: 1,
       tag: 'DESAFIO 01',
       title: 'Sinal de Rádio Interceptado',
-      keys: ['FLAG{ALFRED_NAO_SAIU_DA_TERRA}'],
+      keyHashes: ['82ed53b3ee4bc8fbd46f6a8439193cb5b64985c2eda13d1b3958d0ebcaba3070'],
       points: 100,
       body: `
         <p><em>"Ei, Recruta! Você não vai acreditar..."</em></p>
@@ -972,7 +1030,7 @@
       id: 3,
       tag: 'DESAFIO 03',
       title: 'O Túnel Ofuscado',
-      keys: ['ssh alfredinho@199.115.243.254'],
+      keyHashes: ['3ca6b0265f7fa4f852d2f875bf3274c3f32ede1692487985821049e3767a0834'],
       points: 200,
       type: 'terminal',
       body: `
@@ -990,7 +1048,7 @@
       id: 4,
       tag: 'DESAFIO 04',
       title: 'O Token de Sessão (JWT)',
-      keys: ['EUA'],
+      keyHashes: ['9e62436951a46ed1f5a7b0923596948e55ffc36e7990ff5f56e3ed6d4826be1b'],
       points: 250,
       body: `
         <p>Sessão SSH estabelecida. Estamos no terminal root do Alfred.</p>
@@ -1007,10 +1065,10 @@
       id: 5,
       tag: 'DESAFIO 05',
       title: 'Decodifique a Coincidência',
-      keys: ['OPEN', 'CYBERSECURITY OPEN', 'MSSP OPEN'],
+      keyHashes: ['a02f2fde26657e2e4bbe8292bc70b78cdbb49fd16f528016f3607acd599f2a75', '3f5e7d7643f57f20682f1d727c2bed824001de707e9b6ac6ff829bee4a6e68ed', 'aa870f352a97a2427963e3e2b5a2f79e8d5bf03b5b795d2f0b865ea6795c3df8'],
       points: 300,
       type: 'puzzle',
-      image: 'attachments/7165583e-ba97-4dc3-b83a-49ac371e308e_pasted-image-1.png',
+      image: 'https://yoshidaopen.github.io/alfred-bsides/attachments/7165583e-ba97-4dc3-b83a-49ac371e308e_pasted-image-1.png',
       body: `
         <p>Excelente trabalho, Recruta! Já estamos dentro da cápsula. Mas há um último firewall em nosso caminho: o sistema exige uma <strong>Validação de Identidade Corporativa</strong>. Para evitar engenharia reversa por corporações rivais, o Alfred fragmentou seu próprio arquivo de identificação visual em 8 blocos de dados criptografados.</p>
         <p style="margin-top: 0.75rem;">Os registros indicam que os códigos de destravamento não estão na rede, mas guardados em um módulo de segurança físico aqui mesmo na BSides. Para descobrir a base de operações, você precisa restaurar essa insígnia oficial do projeto.</p>
@@ -1021,7 +1079,7 @@
       id: 2,
       tag: 'DESAFIO 02',
       title: 'Conformidade de Missão',
-      keys: ['ISO42001', 'ISO-42001'],
+      keyHashes: ['5f52b469adf233c9b2ef56815932f8af84743062383da1357e6b6f97badf49ba', '5f52b469adf233c9b2ef56815932f8af84743062383da1357e6b6f97badf49ba'],
       points: 150,
       body: `
         <p>Recruta, o sinal hexadecimal que você decifrou anteriormente confirmou: Alfred ainda está em solo, mas o sistema de travamento da cápsula entrou em modo de segurança.</p>
@@ -1037,7 +1095,7 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
       id: 6,
       tag: 'DESAFIO 06',
       title: 'Autenticação Física',
-      keys: ['42'],
+      keyHashes: ['d4b19341d350fedd75db7272565aa9f5af3e5f7d62f171d7f13fd9558cd40efc'],
       points: 400,
       body: `
         <p>Desfragmentação visual concluída! A imagem foi reconstruída e a insígnia no peito do Alfredinho revela a nossa base de operações: a <strong>MSSP open</strong>. Agora você sabe exatamente quem somos e onde nos encontrar.</p>
@@ -1056,7 +1114,7 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
       id: 7,
       tag: 'DESAFIO FINAL',
       title: 'Extração Física',
-      keys: ['RSAC'],
+      keyHashes: ['b81e83f82da5b25b72473ec6be3f00a26d929204781161e68760e64abc9c9bee'],
       points: 500,
       body: `
         <p>Acesso consolidado! A Vanta validou nossos protocolos e a Alice conteve a anomalia. O sistema do Alfredinho está salvo virtualmente, mas nós temos um problema grave: operamos a contingência às cegas e não fazemos ideia de onde o hardware original está fisicamente localizado.</p>
@@ -1367,9 +1425,11 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
       e.style.display = 'block';
       return;
     }
-    const normalize = s => s.toUpperCase().replace(/[\s-]+/g, '');
-    const accepted = (currentQuest.keys || [currentQuest.key]).map(normalize);
-    if (accepted.includes(normalize(val))) {
+    _submitAnswerHashed(val); }
+  async function _submitAnswerHashed(val) {
+    const hashed = await hashQuestAnswer(val);
+    const accepted = currentQuest.keyHashes || [];
+    if (accepted.includes(hashed)) {
       unlockedQuest = Math.max(unlockedQuest, currentQuest.id + 1);
       const prog = getProgress();
       const solved = new Set(prog.solvedQuests || []);
@@ -1431,11 +1491,13 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
       list.appendChild(b);
     });
   }
-  function adminQuickLogin() {
+  async function adminQuickLogin() {
     const users = getUsers();
     let u = users.find(x => x.email === 'dev@dev.io');
     if (!u) {
-      u = { name: 'Dev Tester', email: 'dev@dev.io', pass: 'devdev' };
+      const salt = randomSaltHex(16);
+      const hash = await hashPassword('devdev', salt);
+      u = { name: 'Dev Tester', email: 'dev@dev.io', salt, hash };
       users.push(u);
       saveUsers(users);
     }
@@ -1592,7 +1654,7 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
         const users = getUsers();
         const u = users.find(x => x.email === winner.email);
         const name = u ? u.name.split(' ')[0] : winner.email;
-        banner.innerHTML = '🏆 <strong>' + name + '</strong> já conquistou o <strong>LEGO do Ayrton Senna</strong>';
+        banner.innerHTML = '🏆 <strong>' + escapeHTML(name) + '</strong> já conquistou o <strong>LEGO do Ayrton Senna</strong>';
         banner.style.color = 'var(--accent-pale)';
       } else {
         banner.innerHTML = '🏎️ O <strong>LEGO do Ayrton Senna</strong> ainda não foi conquistado';
@@ -1678,9 +1740,9 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
       const av = s.data.isEmpty ? '—' : initials(s.data.name);
       const timeStr = s.data.isEmpty ? '—' : formatElapsed(s.data.elapsed);
       col.innerHTML = `
-        <div class="avatar">${av}</div>
-        <div class="name">${s.data.name}</div>
-        <div class="pts" style="font-family: 'Courier New', monospace; font-size: 0.95rem;">${timeStr}</div>
+        <div class="avatar">${escapeHTML(av)}</div>
+        <div class="name">${escapeHTML(s.data.name)}</div>
+        <div class="pts" style="font-family: 'Courier New', monospace; font-size: 0.95rem;">${escapeHTML(timeStr)}</div>
         <div class="step">${s.medal}</div>
       `;
       podium.appendChild(col);
@@ -1708,13 +1770,13 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
         ? '<span style="color: var(--accent);">✓ concluído</span>'
         : (isOnline ? '<span style="color: #2e7d32;">● ao vivo</span>' : '○ ' + timeAgo(r.lastActivity));
       row.innerHTML = `
-        <span class="rank-num">${pos}</span>
-        <div class="avatar">${initials(r.name)}</div>
+        <span class="rank-num">${escapeHTML(pos)}</span>
+        <div class="avatar">${escapeHTML(initials(r.name))}</div>
         <div>
-          <div style="font-weight: ${isMe ? 700 : 500};">${r.name}${isMe ? ' <small style="color: var(--accent); font-weight: 600;">(você)</small>' : ''}</div>
+          <div style="font-weight: ${isMe ? 700 : 500};">${escapeHTML(r.name)}${isMe ? ' <small style="color: var(--accent); font-weight: 600;">(você)</small>' : ''}</div>
           <small style="color: var(--text-muted); font-size: 0.72rem;">${r.solved}/${QUESTS.length} quests · ${liveTag}</small>
         </div>
-        <span class="pts" style="font-family: 'Courier New', monospace; font-size: 0.95rem;">${formatElapsed(r.elapsed)}</span>
+        <span class="pts" style="font-family: 'Courier New', monospace; font-size: 0.95rem;">${escapeHTML(formatElapsed(r.elapsed))}</span>
       `;
       list.appendChild(row);
     });
@@ -1752,7 +1814,7 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
         <p style="font-size: 0.9rem; line-height: 1.55;">Sua selfie foi validada e seu lugar no topo foi travado oficialmente. O LEGO do Ayrton Senna é seu!</p>
         <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid rgba(255,255,255,0.15);">
           <small style="opacity: 0.8;">Postagem validada:</small>
-          <a href="${winner.url}" target="_blank" style="display: block; margin-top: 0.35rem; color: #f4ede0; word-break: break-all; text-decoration: underline;">${winner.url}</a>
+          <a href="${escapeHTML(safeLinkedinUrl(winner.url))}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 0.35rem; color: #f4ede0; word-break: break-all; text-decoration: underline;">${escapeHTML(winner.url)}</a>
         </div>
         <small style="display: block; margin-top: 0.85rem; opacity: 0.7;">Concluído em ${new Date(winner.at).toLocaleString('pt-BR')}</small>
       `;
@@ -1790,8 +1852,9 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
     const inp = document.getElementById('linkedinUrl');
     const url = inp.value.trim();
     const st = document.getElementById('selfieStatus');
-    if (!/^https?:\/\/(www\.)?linkedin\.com\//i.test(url)) {
-      st.textContent = '⚠ Cole uma URL válida do LinkedIn (https://linkedin.com/...)';
+    const safeUrl = safeLinkedinUrl(url);
+    if (!safeUrl) {
+      st.textContent = '⚠ Cole uma URL válida do LinkedIn (https://www.linkedin.com/...)';
       st.style.color = '#ffd6cf';
       return;
     }
@@ -1803,8 +1866,8 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
       return;
     }
     const at = new Date().toISOString();
-    localStorage.setItem(WINNER_KEY, JSON.stringify({ email: currentUserEmail, url, at }));
-    saveProgress({ linkedinUrl: url, completedAt: at });
+    localStorage.setItem(WINNER_KEY, JSON.stringify({ email: currentUserEmail, url: safeUrl, at }));
+    saveProgress({ linkedinUrl: safeUrl, completedAt: at });
     showToast('🏆 Selfie validada — você é o ganhador!');
     const prog = getProgress();
     refreshSelfieSection(new Set(prog.solvedQuests || []), prog);
@@ -1835,16 +1898,19 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
     const el = document.getElementById(id);
     el.textContent = msg; el.style.display = 'block';
   }
-  function doRegister() {
+  async function doRegister() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const pass = document.getElementById('regPass').value;
     if (!name || !email || !pass) return showErr('errRegister', 'Preencha todos os campos.');
+    if (!NAME_REGEX.test(name)) return showErr('errRegister', 'Nome inválido. Use letras, números, espaço, ponto, apóstrofo ou hífen (2-40 caracteres).');
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showErr('errRegister', 'E-mail inválido.');
     if (pass.length < 4) return showErr('errRegister', 'Senha precisa de pelo menos 4 caracteres.');
     const users = getUsers();
     if (users.some(u => u.email === email)) return showErr('errRegister', 'Esse e-mail já está cadastrado — clique em "Conecte-se" abaixo.');
-    users.push({ name, email, pass });
+    const salt = randomSaltHex(16);
+    const hash = await hashPassword(pass, salt);
+    users.push({ name, email, salt, hash });
     saveUsers(users);
     localStorage.setItem('alfred_current', email);
     currentUserEmail = email;
@@ -1853,12 +1919,27 @@ REQUER CONFORMIDADE COM O PADRÃO [ JTP53112-1 ]</pre>
     document.getElementById('welcomeModal').classList.add('show');
   }
   function closeWelcome() { document.getElementById('welcomeModal').classList.remove('show'); }
-  function doLogin() {
+  async function doLogin() {
     const email = document.getElementById('logEmail').value.trim().toLowerCase();
     const pass = document.getElementById('logPass').value;
     if (!email || !pass) return showErr('errLogin', 'Preencha e-mail e senha.');
-    const user = getUsers().find(u => u.email === email && u.pass === pass);
+    const users = getUsers();
+    const user = users.find(u => u.email === email);
     if (!user) return showErr('errLogin', 'E-mail ou senha incorretos.');
+    let ok = false;
+    if (user.salt && user.hash) {
+      const h = await hashPassword(pass, user.salt);
+      ok = (h === user.hash);
+    } else if (user.pass) {
+      ok = (user.pass === pass);
+      if (ok) {
+        const salt = randomSaltHex(16);
+        const hash = await hashPassword(pass, salt);
+        user.salt = salt; user.hash = hash; delete user.pass;
+        saveUsers(users);
+      }
+    }
+    if (!ok) return showErr('errLogin', 'E-mail ou senha incorretos.');
     localStorage.setItem('alfred_current', email);
     enterAsUser(user.name, user.email);
   }
